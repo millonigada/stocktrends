@@ -26,18 +26,18 @@ app.use((req, res, next) => {
     next()
 })
 
-app.get("/*", function (req, res){
+// app.get("/*", function (req, res){
 
-    res.sendFile(
-        path.join(__dirname, "../frontend/build/index.html"),
-        function (err) {
-            if (err) {
-                res.status(500).send(err)
-            }
-        }
-    )
+//     res.sendFile(
+//         path.join(__dirname, "../frontend/build/index.html"),
+//         function (err) {
+//             if (err) {
+//                 res.status(500).send(err)
+//             }
+//         }
+//     )
     
-})
+// })
 
 app.use('/api/home', homeRoutes)
 app.use('/api/search', searchRoutes)
