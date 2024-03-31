@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require("cors");
-const path = require('path')
+const path = require('path');
 
 const homeRoutes = require('./routes/home')
 const searchRoutes = require('./routes/search')
@@ -14,20 +14,19 @@ const walletRoutes = require('./routes/wallet')
 const app = express()
 
 const _dirname = path.dirname("");
-const buildPath = path.join(_dirname, "../frontend/build/");
+const buildPath = path.join(_dirname, "../frontend/build");
 
-app.use(express.json())
+app.use(express.json());
+app.use(cors());
 
 app.use(express.static(buildPath))
 
-app.use(cors())
+// app.use((req, res, next) => {
+//     console.log(req.path, req.method)
+//     next()
+// })
 
-app.use((req, res, next) => {
-    console.log(req.path, req.method)
-    next()
-})
-
-app.get('/*', (req, res) => {
+app.get("/*", function (req, res){
 
     res.sendFile(
         path.join(__dirname, "../frontend/build/index.html"),
