@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
-// const cors = require("cors");
+const cors = require("cors");
 const path = require('path');
 
 const homeRoutes = require('./routes/home')
@@ -17,7 +17,7 @@ const _dirname = path.dirname("");
 const buildPath = path.join(_dirname, "../frontend/build");
 
 app.use(express.json());
-// app.use(cors());
+app.use(cors());
 
 app.use(express.static(buildPath))
 
