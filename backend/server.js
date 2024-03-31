@@ -26,25 +26,25 @@ app.use((req, res, next) => {
     next()
 })
 
-// app.get("/*", function (req, res){
-
-//     res.sendFile(
-//         path.join(__dirname, "../frontend/build/index.html"),
-//         function (err) {
-//             if (err) {
-//                 res.status(500).send(err)
-//             }
-//         }
-//     )
-    
-// })
-
 app.use('/api/home', homeRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/stocks', stockRoutes)
 app.use('/api/watchlist', watchlistRoutes)
 app.use('/api/portfolio', portfolioRoutes)
 app.use('/api/wallet', walletRoutes)
+
+app.get("/*", function (req, res){
+
+    res.sendFile(
+        path.join(__dirname, "../frontend/build/index.html"),
+        function (err) {
+            if (err) {
+                res.status(500).send(err)
+            }
+        }
+    )
+    
+})
 
 
 mongoose.connect(process.env.DB_URI)

@@ -1,6 +1,7 @@
 const Watchlist = require('../models/watchlistModel')
 
 const getWatchlist = async (req, res) => {
+    console.log("getting watchlist")
     const watchlist = await Watchlist.find({}).sort({createdAt: -1})
     if (watchlist.length == 0){
         return res.status(404).json({msg: "Currently you don't have any stock in your watchlist."})

@@ -17,6 +17,9 @@ const Watchlist = () => {
     useEffect(() => {
         const fetchStocks = async () => {
             const response = await fetch(serverURI+'watchlist')
+
+            console.log("watchlist response ", response)
+
             const json = await response.json()
 
             if(response.status == 200){
