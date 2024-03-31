@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card';
 import WatchlistItem from '../components/WatchlistItem';
 import Container from "react-bootstrap/esm/Container";
 import Col from "react-bootstrap/esm/Col";
+import serverURI from "..";
 
 const Watchlist = () => {
 
@@ -15,7 +16,7 @@ const Watchlist = () => {
 
     useEffect(() => {
         const fetchStocks = async () => {
-            const response = await fetch('http://localhost:4000/watchlist')
+            const response = await fetch(serverURI+'watchlist')
             const json = await response.json()
 
             if(response.status == 200){

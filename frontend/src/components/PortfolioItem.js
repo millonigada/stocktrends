@@ -31,7 +31,7 @@ const PortfolioItem = ({ stock, wallet }) => {
         const newWallet = wallet + (sellQuantity*sellPrice)
         const newQuantity = stock.quantity - sellQuantity
 
-        const response = await axios.patch('http://localhost:4000/wallet', {
+        const response = await axios.patch(serverURI+'wallet', {
             amount: newWallet
         })
         const json = await response.data
@@ -41,7 +41,7 @@ const PortfolioItem = ({ stock, wallet }) => {
         }
 
         if(newQuantity!=0){
-            const response = await axios.patch('http://localhost:4000/portfolio/'+stock.ticker, {
+            const response = await axios.patch(serverURI+'portfolio/'+stock.ticker, {
                 quantity: newQuantity
             })
             const json = await response.data
@@ -52,7 +52,7 @@ const PortfolioItem = ({ stock, wallet }) => {
                 dispatch({type: 'UPDATE_PORTFOLIO', payload: updatedStock})
             }
         } else {
-            const response = await axios.delete('http://localhost:4000/portfolio/'+stock.ticker)
+            const response = await axios.delete(serverURI+'portfolio/'+stock.ticker)
             if(response.status == 200){
                 console.log("Stock deleted")
                 dispatch({type: 'DELETE_PORTFOLIO', payload: stock})
@@ -65,7 +65,7 @@ const PortfolioItem = ({ stock, wallet }) => {
         const newQuantity = Number(stock.quantity) + Number(buyQuantity)
         const newCostprice = (Number(stock.costprice)+Number(buyPrice))/2
 
-        const response = await axios.patch('http://localhost:4000/wallet', {
+        const response = await axios.patch(serverURI+'wallet', {
             amount: newWallet
         })
         const json = await response.data
@@ -75,7 +75,7 @@ const PortfolioItem = ({ stock, wallet }) => {
         }
 
         if(newQuantity!=0){
-            const response = await axios.patch('http://localhost:4000/portfolio/'+stock.ticker, {
+            const response = await axios.patch(serverURI+'portfolio/'+stock.ticker, {
                 quantity: newQuantity,
                 costprice: newCostprice
             })

@@ -7,6 +7,7 @@ import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import { useEffect, useState } from "react";
 import { useAppContext } from "../hooks/useAppContext";
 import { useNavigate } from "react-router-dom";
+import serverURI from "..";
 
 const WatchlistItem = ({ stock }) => {
 
@@ -21,7 +22,7 @@ const WatchlistItem = ({ stock }) => {
     const deleteStockFromWatchlist = async (e) => {
       
       e.preventDefault()
-        const response = await fetch('http://localhost:4000/watchlist/'+stock.ticker, {
+        const response = await fetch(serverURI+'watchlist/'+stock.ticker, {
             method: 'DELETE'
         })
         const json = await response.json()
@@ -34,7 +35,7 @@ const WatchlistItem = ({ stock }) => {
 
     useEffect(() => {
         const fetchStockQuote = async () => {
-            const response = await fetch('http://localhost:4000/search/quote/'+stock.ticker)
+            const response = await fetch(serverURI+'search/quote/'+stock.ticker)
             const json = await response.json()
 
             if(response.ok){

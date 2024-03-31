@@ -6,6 +6,7 @@ import PortfolioItem from '../components/PortfolioItem';
 import Container from "react-bootstrap/esm/Container";
 import Col from "react-bootstrap/esm/Col";
 import MessageBox6  from "../components/MessageBox";
+import serverURI from "..";
 
 const Portfolio = () => {
 
@@ -20,7 +21,7 @@ const Portfolio = () => {
 
     useEffect(() => {
         const fetchWallet = async () => {
-            const response = await fetch('http://localhost:4000/wallet')
+            const response = await fetch(serverURI+'wallet')
             const json = await response.json()
 
             if(response.ok){
@@ -33,7 +34,7 @@ const Portfolio = () => {
         }
 
         const fetchStocks = async () => {
-            const response = await fetch('http://localhost:4000/portfolio')
+            const response = await fetch(serverURI+'portfolio')
             const json = await response.json()
 
             if(response.status == 200){

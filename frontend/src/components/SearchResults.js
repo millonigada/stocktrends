@@ -30,6 +30,7 @@ import HC_more from 'highcharts/highcharts-more';
 import HC_indicatorsAll from 'highcharts/indicators/indicators-all';
 import HC_vbp from 'highcharts/indicators/volume-by-price';
 import NewsModal from "./NewsModal";
+import serverURI from "..";
 
 HC_more(Highcharts2);
 HC_indicatorsAll(Highcharts2);
@@ -104,7 +105,7 @@ const SearchResults = () => {
         const newWallet = wallet + (sellQuantity*sellPrice)
         const newQuantity = portfolioData.quantity - sellQuantity
 
-        const response = await axios.patch('http://localhost:4000/wallet', {
+        const response = await axios.patch(serverURI+'wallet', {
             amount: newWallet
         })
         const json = await response.data
@@ -114,7 +115,7 @@ const SearchResults = () => {
         }
 
         if(newQuantity!=0){
-            const response = await axios.patch('http://localhost:4000/portfolio/'+tickerParam, {
+            const response = await axios.patch(serverURI+'portfolio/'+tickerParam, {
                 quantity: newQuantity
             })
             const json = await response.data
@@ -135,7 +136,7 @@ const SearchResults = () => {
                 
             }
         } else {
-            const response = await axios.delete('http://localhost:4000/portfolio/'+tickerParam)
+            const response = await axios.delete(serverURI+'portfolio/'+tickerParam)
             if(response.status == 200){
                 console.log("Stock deleted")
                 if(portfolio){
@@ -160,7 +161,7 @@ const SearchResults = () => {
         console.log('new quantity ',newQuantity)
         const newCostprice = portfolioData ? (Number(portfolioData.costprice)+Number(buyPrice))/2 : Number(buyPrice)
 
-        const response = await axios.patch('http://localhost:4000/wallet', {
+        const response = await axios.patch(serverURI+'wallet', {
             amount: newWallet
         })
         const json = await response.data
@@ -170,7 +171,7 @@ const SearchResults = () => {
         }
 
         if(inPortfolio){
-            const response = await axios.patch('http://localhost:4000/portfolio/'+tickerParam, {
+            const response = await axios.patch(serverURI+'portfolio/'+tickerParam, {
                 quantity: newQuantity,
                 costprice: newCostprice
             })
@@ -200,7 +201,7 @@ const SearchResults = () => {
                 quantity: newQuantity,
                 costprice: newCostprice
             }
-            const response = await axios.post('http://localhost:4000/portfolio/', newStock)
+            const response = await axios.post(serverURI+'portfolio/', newStock)
             const json = await response.data
             if(response.status == 200){
                 setPortfolioData(newStock)
@@ -223,7 +224,7 @@ const SearchResults = () => {
     }
 
     const setPortfolioContext = async () => {
-        const response = await fetch('http://localhost:4000/portfolio')
+        const response = await fetch(serverURI+'portfolio')
         const json = await response.json()
 
         if(response.status == 200){
@@ -232,7 +233,7 @@ const SearchResults = () => {
     }
 
     const setWatchlistContext = async () => {
-        const response = await fetch('http://localhost:4000/watchlist')
+        const response = await fetch(serverURI+'watchlist')
         const json = await response.json()
 
         if(response.status == 200){
@@ -241,7 +242,7 @@ const SearchResults = () => {
     }
 
     const fetchWallet = async () => {
-        const response = await fetch('http://localhost:4000/wallet')
+        const response = await fetch(serverURI+'wallet')
         const amount = await response.json()
 
         if(response.ok){
@@ -256,7 +257,7 @@ const SearchResults = () => {
         setInWatchlist(false)
         setInPortfolio(false)
 
-        const companyResponse = await fetch('http://localhost:4000/search/company/'+tickerParam)
+        const companyResponse = await fetch(serverURI+'search/company/'+tickerParam)
         const companyData = await companyResponse.json()
 
         if(companyResponse.status == 404){
@@ -265,14 +266,14 @@ const SearchResults = () => {
             return
         }
 
-        const chartsResponse = await fetch('http://localhost:4000/search/charts/'+tickerParam)
-        const quoteResponse = await fetch('http://localhost:4000/search/quote/'+tickerParam)
-        const newsResponse = await fetch('http://localhost:4000/search/news/'+tickerParam)
-        const recsResponse = await fetch('http://localhost:4000/search/recs/'+tickerParam)
-        const insiderResponse = await fetch('http://localhost:4000/search/insider/'+tickerParam)
-        const peersResponse = await fetch('http://localhost:4000/search/peers/'+tickerParam)
-        const earningsResponse = await fetch('http://localhost:4000/search/earnings/'+tickerParam)
-        const priceVariationResponse = await fetch('http://localhost:4000/search/pricevariation/'+tickerParam)
+        const chartsResponse = await fetch(serverURI+'search/charts/'+tickerParam)
+        const quoteResponse = await fetch(serverURI+'search/quote/'+tickerParam)
+        const newsResponse = await fetch(serverURI+'search/news/'+tickerParam)
+        const recsResponse = await fetch(serverURI+'search/recs/'+tickerParam)
+        const insiderResponse = await fetch(serverURI+'search/insider/'+tickerParam)
+        const peersResponse = await fetch(serverURI+'search/peers/'+tickerParam)
+        const earningsResponse = await fetch(serverURI+'search/earnings/'+tickerParam)
+        const priceVariationResponse = await fetch(serverURI+'search/pricevariation/'+tickerParam)
 
         const chartsData = await chartsResponse.json()
         const quoteData = await quoteResponse.json()
@@ -408,7 +409,7 @@ const SearchResults = () => {
     }
 
     const checkIfStockInWatchlist = async () => {
-        const response = await fetch('http://localhost:4000/watchlist/'+tickerParam)
+        const response = await fetch(serverURI+'watchlist/'+tickerParam)
             const json = await response.json()
 
             if(response.status == 200){
@@ -430,7 +431,7 @@ const SearchResults = () => {
     }
 
     const checkIfStockInPortfolio = async () => {
-        const response = await fetch('http://localhost:4000/portfolio/'+tickerParam)
+        const response = await fetch(serverURI+'portfolio/'+tickerParam)
             const json = await response.json()
 
             if(response.status == 200){
@@ -462,7 +463,7 @@ const SearchResults = () => {
             watchedprice: search.quote.c
         }
 
-        const response = await axios.post("http://localhost:4000/watchlist/", requestBody);
+        const response = await axios.post(serverURI+"watchlist/", requestBody);
         const json = await response.data;
 
         if (response.status == 200) {
@@ -483,7 +484,7 @@ const SearchResults = () => {
     };
 
     const deleteStockFromWatchlist = async () => {
-        const response = await fetch('http://localhost:4000/watchlist/'+tickerParam, {
+        const response = await fetch(serverURI+'watchlist/'+tickerParam, {
             method: 'DELETE'
         })
         const json = await response.json()
@@ -517,7 +518,7 @@ const SearchResults = () => {
 
             if(tickerExists){
                 const fetchStockQuote = async () => {
-                    const response = await fetch('http://localhost:4000/search/quote/'+tickerParam)
+                    const response = await fetch(serverURI+'search/quote/'+tickerParam)
                     const json = await response.json()
         
                     if(response.ok){

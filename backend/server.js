@@ -39,12 +39,12 @@ app.get("/*", function (req, res){
     
 })
 
-app.use('/home', homeRoutes)
-app.use('/search', searchRoutes)
-app.use('/stocks', stockRoutes)
-app.use('/watchlist', watchlistRoutes)
-app.use('/portfolio', portfolioRoutes)
-app.use('/wallet', walletRoutes)
+app.use('/api/home', homeRoutes)
+app.use('/api/search', searchRoutes)
+app.use('/api/stocks', stockRoutes)
+app.use('/api/watchlist', watchlistRoutes)
+app.use('/api/portfolio', portfolioRoutes)
+app.use('/api/wallet', walletRoutes)
 
 
 mongoose.connect(process.env.DB_URI)
