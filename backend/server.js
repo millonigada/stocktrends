@@ -29,14 +29,18 @@ app.use((req, res, next) => {
 
 app.get('/*', (req, res) => {
 
-    res.sendFile(
-        path.join(__dirname, "../frontend/build/index.html"),
-        function (err) {
-            if (err) {
-                res.status(500).send(err)
-            }
-        }
-    )
+    // res.sendFile(
+    //     path.join(__dirname, "../frontend/build/index.html"),
+    //     function (err) {
+    //         if (err) {
+    //             res.status(500).send(err)
+    //         }
+    //     }
+    // )
+    var filePath = "./frontend/build/index.html"
+    var resolvedPath = path.resolve(filePath);
+    console.log(resolvedPath);
+    return res.sendFile(resolvedPath);
 })
 
 app.use('/home', homeRoutes)
