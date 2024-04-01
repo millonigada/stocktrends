@@ -1,5 +1,18 @@
 const axios = require('axios').default;
 
+const getAutocompleteData = async (req, res) => {
+    const {query} = req.params
+
+    axios.get('https://finnhub.io/api/v1/search?q='+query+'&token='+process.env.FINNHUB_API_KEY)
+    .then(function (response) {
+        console.log(response)
+        res.status(200).json(response.data)
+    })
+    .catch(function (error) {
+        res.status(400).json({error: error.message})
+    });
+}
+
 const getCompanyData = async (req, res) => {
     const {ticker} = req.params
 
@@ -42,12 +55,14 @@ const getPriceVariationChartsData = async (req, res) => {
     let dateTo = new Date()
     let dateFrom = new Date()
     // dateTo.setDate(dateTo.getDate() - 1)
-    dateFrom.setFullYear(dateFrom.getFullYear() - 2)
+    dateFrom.setDate(dateFrom.getDate() - 1)
 
     dateFrom = dateFrom.toISOString().split('T')[0]
     dateTo = dateTo.toISOString().split('T')[0]
+
+    console.log(dateFrom,"***",dateTo)
     
-    axios.get('https://api.polygon.io/v2/aggs/ticker/'+ticker+'/range/1/hour/2024-03-25/2024-03-26?adjusted=true&sort=asc&apiKey='+process.env.POLYGONIO_API_KEY)
+    axios.get('https://api.polygon.io/v2/aggs/ticker/'+ticker+'/range/1/hour/'+dateFrom+'/'+dateTo+'?adjusted=true&sort=asc&apiKey='+process.env.POLYGONIO_API_KEY)
     .then(function (response) {
         res.status(200).json(response.data)
     })
@@ -158,5 +173,6 @@ module.exports = {
     getInsiderData,
     getPeersData,
     getEarningsData,
-    getPriceVariationChartsData
+    getPriceVariationChartsData,
+    getAutocompleteData
 }

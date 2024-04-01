@@ -12,7 +12,7 @@ import axios from "axios";
 import BuyModal from "./BuyModal";
 import serverURI from "../index";
 
-const PortfolioItem = ({ stock, wallet }) => {
+const PortfolioItem = ({ stock, wallet, setStockBought, setStockSold, setStockDealtWith }) => {
 
     const [currentPrice, setCurrentPrice] = useState(null)
     const [change, setChange] = useState(null)
@@ -50,12 +50,22 @@ const PortfolioItem = ({ stock, wallet }) => {
                 let updatedStock = stock
                 updatedStock.quantity = newQuantity
                 dispatch({type: 'UPDATE_PORTFOLIO', payload: updatedStock})
+                setStockSold(true)
+                setStockBought(false)
+                setStockDealtWith(stock.ticker)
+                const interval = setInterval(()=>{setStockSold(false)}, 4000)
+                return () => clearInterval(interval)
             }
         } else {
             const response = await axios.delete(serverURI+'portfolio/'+stock.ticker)
             if(response.status == 200){
                 console.log("Stock deleted")
                 dispatch({type: 'DELETE_PORTFOLIO', payload: stock})
+                setStockSold(true)
+                setStockBought(false)
+                setStockDealtWith(stock.ticker)
+                const interval = setInterval(()=>{setStockSold(false)}, 4000)
+                return () => clearInterval(interval)
             }
         }
     }
@@ -86,6 +96,11 @@ const PortfolioItem = ({ stock, wallet }) => {
                 updatedStock.quantity = newQuantity
                 updatedStock.costprice = newCostprice
                 dispatch({type: 'UPDATE_PORTFOLIO', payload: updatedStock})
+                setStockSold(false)
+                setStockBought(true)
+                setStockDealtWith(stock.ticker)
+                const interval = setInterval(()=>{setStockBought(false)}, 4000)
+                return () => clearInterval(interval)
             }
         }
     }
@@ -128,7 +143,7 @@ const PortfolioItem = ({ stock, wallet }) => {
           <Row>
             <Col xs={6} md={3}>
               <div>
-                <p>Quantity:</p>
+                <p className="fs-6">Quantity:</p>
                 <p>Avg. Cost / Share:</p>
                 <p>Total Cost:</p>
               </div>
@@ -175,19 +190,19 @@ const PortfolioItem = ({ stock, wallet }) => {
       </Card.Body>
       <Card.Footer>
       <Row className="bg-light">
-        <Col xs={2} lg={1}>
-        <Container >
+        <Col xs="auto">
+        {/* <Container > */}
                 <Button variant="primary" className="text-left text-secondary text-white" onClick={() => setOpenBuyModal(true)}>
                     Buy
                 </Button>
-            </Container>
+            {/* </Container> */}
         </Col>
-        <Col xs={2} lg={1}>
-        <Container >
+        <Col xs="auto">
+        {/* <Container > */}
                 <Button variant="danger" className="text-left text-secondary text-white" onClick={() => setOpenSellModal(true)}>
                     Sell
                 </Button>
-            </Container>
+            {/* </Container> */}
         </Col>
           </Row>
       </Card.Footer>

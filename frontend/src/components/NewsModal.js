@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSquareFacebook } from '@fortawesome/free-brands-svg-icons';
 import { faXTwitter } from '@fortawesome/free-brands-svg-icons';
 import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
 
 const NewsModal = ({newsItem, showModal, closeModal}) => {
     return (
@@ -27,10 +28,14 @@ const NewsModal = ({newsItem, showModal, closeModal}) => {
                 </Button> */}
 
                 <Row>
-                    <Container class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="" data-size=""><a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(newsItem && newsItem.url)}`} class="fb-xfbml-parse-ignore"><FontAwesomeIcon icon={faSquareFacebook} /></a></Container>
-                    <Button variant='btn-primary-outline' href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(newsItem && newsItem.headline)}+ ' ' + ${encodeURIComponent(newsItem && newsItem.url)}`} target="_blank">
-                    <FontAwesomeIcon icon={faXTwitter} />
-                    </Button>
+                    <Col xs="auto">
+                        <Container class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="" data-size=""><a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(newsItem && newsItem.url)}`} class="fb-xfbml-parse-ignore"><FontAwesomeIcon icon={faSquareFacebook} /></a></Container>
+                    </Col>
+                    <Col xs="auto">
+                        <Button variant='btn-primary-outline' href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(newsItem && newsItem.headline)}+ ' ' + ${encodeURIComponent(newsItem && newsItem.url)}`} target="_blank">
+                        <FontAwesomeIcon icon={faXTwitter} />
+                        </Button>
+                    </Col>                    
                 </Row>
                 
             </Modal.Body>

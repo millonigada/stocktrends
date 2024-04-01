@@ -17,7 +17,7 @@ const _dirname = path.dirname("");
 const buildPath = path.join(_dirname, "../frontend/build");
 
 const corsOptions = {
-    origin: ['http://localhost:4000','http://3.133.79.62']
+    origin: ['http://localhost:4000','http://18.223.205.127']
   };
 
 app.use(express.json());

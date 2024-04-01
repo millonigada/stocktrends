@@ -47,17 +47,22 @@ HC_vbp(Highcharts2);
 
 const SearchResults = () => {
 
-    const [isLoading, setIsLoading] = useState(true)
+    const { tickerParam } = useParams() 
+
+    const {search, watchlist, portfolio, dispatch} = useAppContext()
+    
+    const [isLoading, setIsLoading] = useState(search && search.ticker==tickerParam ? false : true)
     const [tickerExists, setTickerExists] = useState(false)
     const [tab, setTab] = useState('summary')
     const [changePos, setChangePos] = useState(null)
+    const [newStockSet, setNewStockSet] = useState(false)
 
     const [inWatchlist, setInWatchlist] = useState(false)
     const [inPortfolio, setInPortfolio] = useState(false)
 
     const [addedToWatchlist, setAddedToWatchlist] = useState(false)
-    const [stockBought, setStockBought] = useState(false)
     const [removedFromWatchlist, setRemovedFromWatchlist] = useState(false)
+    const [stockBought, setStockBought] = useState(false)
     const [stockSold, setStockSold] = useState(false)
 
     const [portfolioData, setPortfolioData] = useState(null)
@@ -70,10 +75,6 @@ const SearchResults = () => {
     const [openBuyModal, setOpenBuyModal] = useState(false)
     const [openNewsModal, setOpenNewsModal] = useState(false)
     const [newsModalItem, setNewsModalItem] = useState(null)
-
-    const { tickerParam } = useParams() 
-
-    const {search, watchlist, portfolio, dispatch} = useAppContext()
 
     const handleTab = (e, newTab) => {
         setTab(newTab);
@@ -263,6 +264,7 @@ const SearchResults = () => {
         if(companyResponse.status == 404){
             setIsLoading(false)
             dispatch({type: 'SET_SEARCH', payload: null})
+            setNewStockSet(false)
             return
         }
 
@@ -317,10 +319,10 @@ const SearchResults = () => {
                 console.log(err)
             }
 
-            chartsData.results['ohlc'] = []
-            chartsData.results['volume'] = []
-
             try {
+
+                chartsData.results['ohlc'] = []
+                chartsData.results['volume'] = []
 
                 chartsData.results['ohlc'] = chartsData.results.map(item => [item.t, item.o, item.h, item.l, item.c])
                 chartsData.results['volume'] = chartsData.results.map(item => [item.t, item.v])
@@ -367,10 +369,11 @@ const SearchResults = () => {
                 console.log(err)
             }
 
-            priceVariationData.results['hours'] = []
-            priceVariationData.results['hourlyPrice'] = []
+            
 
             try {
+                priceVariationData.results['hours'] = []
+                priceVariationData.results['hourlyPrice'] = []
                 priceVariationData.results['hours'] = priceVariationData.results.map(item => new Date(item.t).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -399,6 +402,12 @@ const SearchResults = () => {
             console.log(searchData)
 
             dispatch({type: 'SET_SEARCH', payload: searchData})
+            setNewStockSet(true)
+
+            const currentTimestamp = new Date();
+            const formattedTimestamp = currentTimestamp.toISOString().replace("T", " ").substring(0, 19);
+            setTimestamp(formattedTimestamp);
+            console.log("timestamp set initially")
 
             checkIfStockInWatchlist()
 
@@ -516,39 +525,50 @@ const SearchResults = () => {
         if(!search || tickerParam != search.ticker){
             getStockData()
 
-            if(tickerExists){
-                const fetchStockQuote = async () => {
-                    const response = await fetch(serverURI+'search/quote/'+tickerParam)
-                    const json = await response.json()
-        
-                    if(response.ok){
-                        
-                        if(json.d >= 0){
-                            setChangePos(true)
-                        } else {
-                            setChangePos(false)
-                        }
-    
-                        const currentTimestamp = new Date();
-                        const formattedTimestamp = currentTimestamp.toISOString().replace("T", " ").substring(0, 19);
-                        setTimestamp(formattedTimestamp);
-                    }
-                }
-    
-                console.log("SEARCH",search)
-    
-                fetchStockQuote()
-        
-                const interval = setInterval(fetchStockQuote, 15000)
-                
-                return () => clearInterval(interval)
-            }
-
         } else {
             setIsLoading(false)
             setTickerExists(true)
         }
+        
     }, [tickerParam, portfolio]);
+
+    // useEffect(() => {
+    //     const fetchStockQuote = async () => {
+    //         const response = await fetch(serverURI+'search/quote/'+tickerParam)
+    //         const json = await response.json()
+
+    //         if(response.ok){
+                
+    //             if(json.d >= 0){
+    //                 setChangePos(true)
+    //             } else {
+    //                 setChangePos(false)
+    //             }
+
+    //             const currentTimestamp = new Date();
+    //             const formattedTimestamp = currentTimestamp.toISOString().replace("T", " ").substring(0, 19);
+    //             setTimestamp(formattedTimestamp);
+
+    //             if(search){
+    //                 search.quote.c = Math.round(search.quote.c*100)/100
+    //                 search.quote.d = Math.round(json.d*100)/100
+    //                 search.quote.dp = Math.round(json.dp*100)/100
+
+    //                 dispatch({type: "SET_SEARCH", payload: search})
+    //             }
+
+    //             console.log("timestamp set")
+    //         }
+    //     }
+
+    //     console.log("SEARCH",search)
+
+    //     fetchStockQuote()
+
+    //     const interval = setInterval(fetchStockQuote, 15000)
+        
+    //     return () => clearInterval(interval)
+    // }, [newStockSet])
 
     return (
         <Container className="mx-auto">
@@ -556,7 +576,7 @@ const SearchResults = () => {
             {
                 isLoading ? 
                 (
-                    <Container>
+                    <Container className="mx-auto" fluid style={{color: 'blue'}}>
                         <Spinner />
                     </Container>
                 ) : tickerExists ? (
@@ -602,9 +622,14 @@ const SearchResults = () => {
                                 <h2>
                                     {search.ticker+" "}
                                     {inWatchlist ? 
-                                        <FaStar onClick={deleteStockFromWatchlist}/>
+                                        <FaStar onClick={deleteStockFromWatchlist} style={{
+                                            color: "yellow",
+                                            cursor: "pointer"
+                                        }}/>
                                             :
-                                        <CiStar onClick={addStockToWatchlist}/>
+                                        <CiStar onClick={addStockToWatchlist} style={{
+                                            cursor: "pointer"
+                                        }}/>
                                     }
                                 </h2>
                                 <h5>{search.company.name}</h5>
@@ -669,22 +694,22 @@ const SearchResults = () => {
                                         <Tab
                                             value='summary'
                                             label="Summary"
-                                            sx={{minWidth: 100, width: 300, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
                                         />
                                         <Tab
                                             value="news"
                                             label="Top News"
-                                            sx={{minWidth: 100, width: 300, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
                                         />
                                         <Tab
                                             value="charts"
                                             label="Charts"
-                                            sx={{minWidth: 100, width: 300, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
                                         />
                                         <Tab
                                             value="insights"
                                             label="Insights"
-                                            sx={{minWidth: 100, width: 300, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
                                         />
                                         </Tabs>
                                     </Box>
@@ -733,7 +758,7 @@ const SearchResults = () => {
                                                                 </Container>
                                                                 <Container className="my-2">
                                                                     {
-                                                                        search.peers.map(
+                                                                        search.peers.filter((peer) => !peer.includes('.')).map(
                                                                             (ticker, index) => (
                                                                                 <span key={ticker}>
                                                                                     <Link to={'/search/'+ticker}>{ticker}{index<search.peers.length-1 ? ', ' : ''}</Link>
@@ -747,11 +772,13 @@ const SearchResults = () => {
                                                     </Row>
                                                 </Col>
                                                 <Col>
-                                                    <HighchartsReact highcharts={Highcharts} options={
+                                                <Container>
+                                                <HighchartsReact highcharts={Highcharts} options={
                                                         {
                                                             chart: {
                                                                   type: 'line',
-                                                                  width: 500, // Set the width of the chart
+                                                                  width: 500,
+                                                                  color: changePos ? 'green' : 'red'
                                                               },
                                                               title: {
                                                                   text: `${tickerParam} Hourly Price Variation`,
@@ -759,7 +786,7 @@ const SearchResults = () => {
                                                               },
                                                               xAxis: {
                                                                 type: 'datetime',
-                                                                categories: search.priceVariation.hours,
+                                                                categories: search.priceVariation ? search.priceVariation.hours : null,
                                                                 tickInterval: 5,
                                                                 tickWidth: 1, 
                                                                 tickLength: 10,
@@ -786,7 +813,7 @@ const SearchResults = () => {
                                                                   enabled: false 
                                                               },
                                                               series: [{
-                                                                  data: search.priceVariation.hourlyPrice,
+                                                                  data: search.priceVariation ? search.priceVariation.hourlyPrice : null,
                                                                   color: 'green',
                                                                   marker: {
                                                                     enabled: false 
@@ -808,6 +835,7 @@ const SearchResults = () => {
                                                               }
                                                           }
                                                     } />
+                                                </Container>
                                                 </Col>
                                             </Row>
                                         </Container>
@@ -965,60 +993,7 @@ const SearchResults = () => {
                                                 </tbody>
                                                 </Table>
                                                 <Row>
-                                                <Col xs={12} md={6}>
-                                                    <Container className="my-4 mx-2">
-                                                    <HighchartsReact highcharts={Highcharts} options={
-                                                    {
-                                                        chart: {
-                                                          type: 'spline',
-                                                          backgroundColor: '#f5f5f5',
-                                                          events: {
-                                                            render: function() {
-                                                              var chart = this;
-                                                              
-                                                                chart.customLine = chart.renderer.path(['M', chart.plotLeft, chart.plotTop + chart.plotHeight + 60, 'L', chart.plotLeft + chart.plotWidth, chart.plotTop + chart.plotHeight + 60])
-                                                                  .attr({
-                                                                    'stroke-width': 2,
-                                                                    stroke: 'black'
-                                                                  })
-                                                                  .add();
-                                                              
-                                                            }
-                                                          }
-                                                        },
-                                                        title: {
-                                                          text: 'Historical EPS Surprises',
-                                                          align: 'center'
-                                                        },
-                                                        xAxis: {
-                                                          categories: search.earnings.combined, 
-                                                          title: {
-                                                            text: ''
-                                                          },
-                                                          lineWidth: 2,
-                                                        },
-                                                        yAxis: {
-                                                          title: {
-                                                            text: 'Quarterly EPS'
-                                                          }
-                                                        },
-                                                        legend: {
-                                                          align: 'center',
-                                                          verticalAlign: 'bottom',
-                                                          layout: 'horizontal'
-                                                        },
-                                                        series: [{
-                                                          name: 'Actual',
-                                                          data: search.earnings.actual
-                                                        }, {
-                                                          name: 'Estimate',
-                                                          data: search.earnings.estimate 
-                                                        }]
-                                                      }
-                                                } />
-                                                    </Container>
-                                                </Col>
-                                                
+
                                                 <Col xs={12} md={6}>
                                                     <Container className="my-4 mx-2">
                                                     <HighchartsReact highcharts={Highcharts} options={
@@ -1085,6 +1060,62 @@ const SearchResults = () => {
                                                         }/>
                                                     </Container>
                                                 </Col>
+
+                                                <Col xs={12} md={6}>
+                                                    <Container className="my-4 mx-2">
+                                                    <HighchartsReact highcharts={Highcharts} options={
+                                                    {
+                                                        chart: {
+                                                          type: 'spline',
+                                                          backgroundColor: '#f5f5f5',
+                                                          events: {
+                                                            render: function() {
+                                                              var chart = this;
+                                                              
+                                                                chart.customLine = chart.renderer.path(['M', chart.plotLeft, chart.plotTop + chart.plotHeight + 60, 'L', chart.plotLeft + chart.plotWidth, chart.plotTop + chart.plotHeight + 60])
+                                                                  .attr({
+                                                                    'stroke-width': 2,
+                                                                    stroke: 'black'
+                                                                  })
+                                                                  .add();
+                                                              
+                                                            }
+                                                          }
+                                                        },
+                                                        title: {
+                                                          text: 'Historical EPS Surprises',
+                                                          align: 'center'
+                                                        },
+                                                        xAxis: {
+                                                          categories: search.earnings.combined, 
+                                                          title: {
+                                                            text: ''
+                                                          },
+                                                          lineWidth: 2,
+                                                        },
+                                                        yAxis: {
+                                                          title: {
+                                                            text: 'Quarterly EPS'
+                                                          }
+                                                        },
+                                                        legend: {
+                                                          align: 'center',
+                                                          verticalAlign: 'bottom',
+                                                          layout: 'horizontal'
+                                                        },
+                                                        series: [{
+                                                          name: 'Actual',
+                                                          data: search.earnings.actual
+                                                        }, {
+                                                          name: 'Estimate',
+                                                          data: search.earnings.estimate 
+                                                        }]
+                                                      }
+                                                } />
+                                                    </Container>
+                                                </Col>
+                                                
+                                                
                                                 </Row>
                                                 
                                         </Container>

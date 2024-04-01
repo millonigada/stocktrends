@@ -9,14 +9,14 @@ import { useAppContext } from "../hooks/useAppContext";
 import { useNavigate } from "react-router-dom";
 import serverURI from "..";
 
-const WatchlistItem = ({ stock }) => {
+const WatchlistItem = ({ stock, allDeleted }) => {
 
     const [currentPrice, setCurrentPrice] = useState(null)
     const [change, setChange] = useState(null)
     const [pChange, setPChange] = useState(null)
     const [changePos, setChangePos] = useState(null)
 
-    const {dispatch} = useAppContext()
+    const {watchlist, dispatch} = useAppContext()
     const navigate = useNavigate()
 
     const deleteStockFromWatchlist = async (e) => {

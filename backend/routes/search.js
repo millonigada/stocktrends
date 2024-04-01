@@ -9,7 +9,8 @@ const {
     getInsiderData,
     getPeersData,
     getEarningsData,
-    getPriceVariationChartsData
+    getPriceVariationChartsData,
+    getAutocompleteData
 } = require('../controllers/searchController')
 
 const router = express.Router()
@@ -17,6 +18,8 @@ const router = express.Router()
 router.get('/', (req, res) => {
     res.json({msg: 'Default search route'})
 })
+
+router.get('/autocomplete/:query', getAutocompleteData)
 
 router.get('/company/:ticker', getCompanyData)
 

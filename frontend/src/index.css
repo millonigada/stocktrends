@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.autocompleteBox {
+  min-height: 60px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.autocompleteBox:hover{
+  background-color: lightgray;
+}
+
+.card .nodatacard {
+  background-color: '#faf4bc'!important
+}

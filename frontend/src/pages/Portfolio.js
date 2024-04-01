@@ -5,7 +5,7 @@ import Card from 'react-bootstrap/Card';
 import PortfolioItem from '../components/PortfolioItem';
 import Container from "react-bootstrap/esm/Container";
 import Col from "react-bootstrap/esm/Col";
-import MessageBox6  from "../components/MessageBox";
+import MessageBox from "../components/MessageBox";
 import serverURI from "..";
 
 const Portfolio = () => {
@@ -18,6 +18,7 @@ const Portfolio = () => {
 
     const [stockBought, setStockBought] = useState(false)
     const [stockSold, setStockSold] = useState(false)
+    const [stockDealtWith, setStockDealtWith] = useState('')
 
     useEffect(() => {
         const fetchWallet = async () => {
@@ -55,14 +56,20 @@ const Portfolio = () => {
         }
     }, [])
 
+    useEffect(() => {
+        if(!portfolio || portfolio.length==0){
+            setPortfolioExists(false)
+          }
+    }, [portfolio])
+
     return (
         <Col xs={12} md={10} lg={8} className="mx-auto">
-            {/* { stockBought ? 
+            { stockBought ? 
                             <MessageBox 
                                 isPositive={true}
                                 isDismissible={true}
                                 setShow={setStockBought}
-                                message={tickerParam+" bought successfully."}
+                                message={stockDealtWith+" bought successfully."}
                             /> :
                             null
                     }
@@ -71,10 +78,10 @@ const Portfolio = () => {
                                 isPositive={false}
                                 isDismissible={true}
                                 setShow={setStockSold}
-                                message={tickerParam+" sold successfully."}
+                                message={stockDealtWith+" sold successfully."}
                             /> :
                             null
-                    } */}
+                    }
             <Container><h3>My Portfolio</h3></Container>
             {isLoadingWallet || isLoadingPortfolio ?
             <Spinner/> :
@@ -83,11 +90,11 @@ const Portfolio = () => {
                 {portfolioExists && portfolio ?
                 <Container>
                     {portfolio && portfolio.map((stock) => (
-                        <PortfolioItem key={stock._id} stock={stock} wallet={wallet}/>
+                        <PortfolioItem stock={stock} wallet={wallet} setStockBought={setStockBought} setStockSold={setStockSold} setStockDealtWith={setStockDealtWith}/>
                     ))}
                 </Container> 
                 :
-                <Card className="bg-light text-center my-4">
+                <Card className="text-center my-4" style={{backgroundColor: '#faf4bc'}}>
                     <Card.Body>
                         Currently you don't have any stock.
                     </Card.Body>

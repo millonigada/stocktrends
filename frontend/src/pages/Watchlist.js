@@ -35,6 +35,12 @@ const Watchlist = () => {
         fetchStocks()
     }, [])
 
+    useEffect(() => {
+        if(!watchlist || watchlist.length==0){
+            setWatchlistExists(false)
+          }
+    }, [watchlist])
+
     return (
         <Col xs={12} md={8} lg={8} className="mx-auto">
             <h3 className="my-2">My Watchlist</h3>
@@ -44,10 +50,12 @@ const Watchlist = () => {
                 watchlistExists && watchlist ?
                 <Container>
                     {watchlist && watchlist.map((stock) => (
-                        <WatchlistItem stock={stock} allDeleted={setWatchlistExists}/>
+                        <WatchlistItem stock={stock} allDeleted={() => {
+                            setWatchlistExists(false)
+                        }}/>
                     ))}
                 </Container> :
-                <Card className="bg-light text-center my-4">
+                <Card className="nodatacard text-center my-4 mx-2" style={{backgroundColor: '#faf4bc'}}>
                     <Card.Body>
                     Currently you don't have any stock in your watchlist.
                     </Card.Body>
