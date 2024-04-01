@@ -39,6 +39,8 @@ app.use('/api/wallet', walletRoutes)
 
 app.get("/*", function (req, res){
 
+    console.log("Request: ",req)
+
     res.sendFile(
         path.join(__dirname, "../frontend/build/index.html"),
         function (err) {
