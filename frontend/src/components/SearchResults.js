@@ -576,7 +576,7 @@ const SearchResults = () => {
             {
                 isLoading ? 
                 (
-                    <Container className="mx-auto" fluid style={{color: 'blue'}}>
+                    <Container className="mx-auto w-100 h-100" fluid style={{color: 'blue'}}>
                         <Spinner />
                     </Container>
                 ) : tickerExists ? (
@@ -694,22 +694,22 @@ const SearchResults = () => {
                                         <Tab
                                             value='summary'
                                             label="Summary"
-                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 170, textTransform: "capitalize"}}
                                         />
                                         <Tab
                                             value="news"
                                             label="Top News"
-                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 170, textTransform: "capitalize"}}
                                         />
                                         <Tab
                                             value="charts"
                                             label="Charts"
-                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 170, textTransform: "capitalize"}}
                                         />
                                         <Tab
                                             value="insights"
                                             label="Insights"
-                                            sx={{minWidth: 40, width: 150, textTransform: "capitalize"}}
+                                            sx={{minWidth: 40, width: 170, textTransform: "capitalize"}}
                                         />
                                         </Tabs>
                                     </Box>
@@ -778,7 +778,6 @@ const SearchResults = () => {
                                                             chart: {
                                                                   type: 'line',
                                                                   width: 500,
-                                                                  color: changePos ? 'green' : 'red'
                                                               },
                                                               title: {
                                                                   text: `${tickerParam} Hourly Price Variation`,
@@ -814,7 +813,7 @@ const SearchResults = () => {
                                                               },
                                                               series: [{
                                                                   data: search.priceVariation ? search.priceVariation.hourlyPrice : null,
-                                                                  color: 'green',
+                                                                  color: changePos ? 'green' : 'red',
                                                                   marker: {
                                                                     enabled: false 
                                                                 }
