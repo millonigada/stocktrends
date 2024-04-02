@@ -10,7 +10,7 @@ const StockNavbar = () => {
     const {search} = useAppContext()
 
     return (
-        <Navbar fixed="top" expand="lg" className="stocknavbar text-white" style={{backgroundColor: '#0154ad'}}>
+        <Navbar sticky="top" expand="lg" className="stocknavbar text-white" style={{backgroundColor: '#0154ad'}}>
         <Container >
           <Navbar.Brand href="/search/home" className='text-white'>Stock Search</Navbar.Brand>
           <Navbar.Toggle  aria-controls="basic-navbar-nav" />

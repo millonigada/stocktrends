@@ -54,8 +54,12 @@ const SearchResults = () => {
     const [isLoading, setIsLoading] = useState(search && search.ticker==tickerParam ? false : true)
     const [tickerExists, setTickerExists] = useState(false)
     const [tab, setTab] = useState('summary')
-    const [changePos, setChangePos] = useState(null)
+    const [changePos, setChangePos] = useState(search && search.quote.d > 0 ? true : false)
     const [newStockSet, setNewStockSet] = useState(false)
+
+    const [currentPrice, setCurrentPrice] = useState(search ? Math.round(100*search.quote.c)/100 : 0)
+    const [change, setChange] = useState(search ? Math.round(100*search.quote.d)/100 : 0)
+    const [pChange, setPChange] = useState(search ? Math.round(100*search.quote.dp)/100 : 0)
 
     const [inWatchlist, setInWatchlist] = useState(false)
     const [inPortfolio, setInPortfolio] = useState(false)
@@ -69,7 +73,7 @@ const SearchResults = () => {
     const [optionsForChartsTab, setOptionsForChartsTab] = useState(null)
 
     const [wallet, setWallet] = useState(null)
-    const [timestamp, setTimestamp] = useState('')
+    const [timestamp, setTimestamp] = useState(new Date().toISOString().replace("T", " ").substring(0, 19))
 
     const [openSellModal, setOpenSellModal] = useState(false)
     const [openBuyModal, setOpenBuyModal] = useState(false)
@@ -402,6 +406,14 @@ const SearchResults = () => {
             console.log(searchData)
 
             dispatch({type: 'SET_SEARCH', payload: searchData})
+            if(searchData.quote.d >= 0){
+                setChangePos(true)
+            } else {
+                setChangePos(false)
+            }
+            setCurrentPrice(Math.round(searchData.quote.c * 100) / 100)
+            setChange(Math.round(searchData.quote.d * 100) / 100)
+            setPChange(Math.round(searchData.quote.dp * 100) / 100)
             setNewStockSet(true)
 
             const currentTimestamp = new Date();
@@ -469,7 +481,8 @@ const SearchResults = () => {
         const requestBody = {
             ticker: search.ticker.toUpperCase(),
             name: search.company.name,
-            watchedprice: search.quote.c
+            // watchedprice: search.quote.c
+            watchedprice: currentPrice
         }
 
         const response = await axios.post(serverURI+"watchlist/", requestBody);
@@ -532,43 +545,48 @@ const SearchResults = () => {
         
     }, [tickerParam, portfolio]);
 
-    // useEffect(() => {
-    //     const fetchStockQuote = async () => {
-    //         const response = await fetch(serverURI+'search/quote/'+tickerParam)
-    //         const json = await response.json()
-
-    //         if(response.ok){
-                
-    //             if(json.d >= 0){
-    //                 setChangePos(true)
-    //             } else {
-    //                 setChangePos(false)
-    //             }
-
-    //             const currentTimestamp = new Date();
-    //             const formattedTimestamp = currentTimestamp.toISOString().replace("T", " ").substring(0, 19);
-    //             setTimestamp(formattedTimestamp);
-
-    //             if(search){
-    //                 search.quote.c = Math.round(search.quote.c*100)/100
-    //                 search.quote.d = Math.round(json.d*100)/100
-    //                 search.quote.dp = Math.round(json.dp*100)/100
-
-    //                 dispatch({type: "SET_SEARCH", payload: search})
-    //             }
-
-    //             console.log("timestamp set")
-    //         }
-    //     }
-
-    //     console.log("SEARCH",search)
-
-    //     fetchStockQuote()
-
-    //     const interval = setInterval(fetchStockQuote, 15000)
-        
-    //     return () => clearInterval(interval)
-    // }, [newStockSet])
+    useEffect(() => {
+        if(newStockSet && search && search.ticker==tickerParam){
+            const fetchStockQuote = async () => {
+                const response = await fetch(serverURI+'search/quote/'+tickerParam)
+                const json = await response.json()
+    
+                if(response.ok){
+                    
+                    if(json.d >= 0){
+                        setChangePos(true)
+                    } else {
+                        setChangePos(false)
+                    }
+    
+                    const currentTimestamp = new Date();
+                    const formattedTimestamp = currentTimestamp.toISOString().replace("T", " ").substring(0, 19);
+                    setTimestamp(formattedTimestamp);
+    
+                    setCurrentPrice(Math.round((currentPrice ? currentPrice : 0 + 1) * 100) / 100)
+                    setChange(Math.round(json.d * 100) / 100)
+                    setPChange(Math.round(json.dp * 100) / 100)
+                    // if(search){
+                    //     search.quote.c = Math.round(20000*100)/100+1
+                    //     search.quote.d = Math.round(json.d*100)/100
+                    //     search.quote.dp = Math.round(json.dp*100)/100
+    
+                    //     dispatch({type: "SET_SEARCH", payload: search})
+                    // }
+    
+                    console.log("timestamp set")
+                }
+            }
+    
+            console.log("SEARCH",search)
+    
+            fetchStockQuote()
+    
+            const interval = setInterval(fetchStockQuote, 15000)
+            
+            return () => clearInterval(interval)
+        }
+    }, [newStockSet])
 
     return (
         <Container className="mx-auto">
@@ -655,10 +673,12 @@ const SearchResults = () => {
                             </Col>
                             <Col xs={4} className={changePos ? 'text-success' : 'text-danger'}>
                                 <h2>
-                                    {Math.round(100*search.quote.c)/100}
+                                    {/* {Math.round(100*search.quote.c)/100} */}
+                                    {currentPrice}
                                 </h2>
                                 <h4>
-                                    {changePos ? <IoMdArrowDropup/> : <IoMdArrowDropdown/>}{Math.round(100*search.quote.d)/100+' ('+Math.round(100*search.quote.dp)/100+'%)'}
+                                    {/* {changePos ? <IoMdArrowDropup/> : <IoMdArrowDropdown/>}{Math.round(100*search.quote.d)/100+' ('+Math.round(100*search.quote.dp)/100+'%)'} */}
+                                    {changePos ? <IoMdArrowDropup/> : <IoMdArrowDropdown/>}{change+' ('+pChange+'%)'}
                                 </h4>
                                 <p className="text-secondary">{timestamp}</p>
                             </Col>
@@ -1128,7 +1148,8 @@ const SearchResults = () => {
                             closeModal={()=>setOpenSellModal(false)} 
                             isOpen={openSellModal} 
                             handleSubmit={handleSell}
-                            currentPrice={search.quote.c}
+                            // currentPrice={search.quote.c}
+                            currentPrice = {currentPrice}
                             stock={portfolioData}
                             wallet={wallet}
                         /> : null}
@@ -1137,7 +1158,8 @@ const SearchResults = () => {
                             closeModal={()=>setOpenBuyModal(false)} 
                             isOpen={openBuyModal} 
                             handleSubmit={handleBuy}
-                            currentPrice={search.quote.c}
+                            // currentPrice={search.quote.c}
+                            currentPrice = {currentPrice}
                             stock={portfolioData ? portfolioData : {
                                 "ticker": tickerParam,
                                 "name": search.company.name,

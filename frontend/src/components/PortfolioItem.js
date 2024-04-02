@@ -11,6 +11,7 @@ import SellModal from "./SellModal";
 import axios from "axios";
 import BuyModal from "./BuyModal";
 import serverURI from "../index";
+import { useNavigate } from "react-router-dom";
 
 const PortfolioItem = ({ stock, wallet, setStockBought, setStockSold, setStockDealtWith }) => {
 
@@ -25,6 +26,8 @@ const PortfolioItem = ({ stock, wallet, setStockBought, setStockSold, setStockDe
     const [openBuyModal, setOpenBuyModal] = useState(false)
 
     const {dispatch} = useAppContext()
+
+    const navigate = useNavigate()
 
     const handleSell = async (sellQuantity, sellPrice) => {
 
@@ -133,7 +136,12 @@ const PortfolioItem = ({ stock, wallet, setStockBought, setStockSold, setStockDe
 
   return (
     <Card className="my-2">
-        <Card.Header>
+        <Card.Header onClick={(e) => {
+        if(e.defaultPrevented){
+          return
+        }
+        navigate('/search/'+stock.ticker)
+      }}>
                 <b>{stock.ticker}</b>
                 <span>{" "+stock.name}</span>
         </Card.Header>

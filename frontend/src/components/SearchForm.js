@@ -104,8 +104,8 @@ const SearchForm = () => {
 
     return (
         <Container>
-            <Container className="mx-auto p-0 border rounded border-primary rounded-pill">
-                <Container>
+            <Container>
+                <Container className="mx-auto p-0 border rounded border-primary rounded-pill">
                 <Form onSubmit={(e) => {
                         e.preventDefault()
                         setAutocompleteSuggestionsExist(false)
